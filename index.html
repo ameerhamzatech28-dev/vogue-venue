@@ -168,7 +168,7 @@
       <h2>Skip the call, we'll ring you.</h2>
       <p>Tell us what you're craving and where to send it — our team confirms every order by phone before it heads to the oven.</p>
     </div>
-    <form id="orderForm" class="reveal" action="/api/contact-handler" method="POST">
+    <form id="orderForm" class="reveal" action="/.netlify/functions/contact-handler" method="POST">
       <input type="text" name="company" class="hp" tabindex="-1" autocomplete="off">
       <div class="form-row">
         <div class="field">

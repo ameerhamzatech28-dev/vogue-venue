@@ -58,6 +58,26 @@ Vercel's free tier includes custom domains: **Settings → Domains** → add
 `ten11pizzavalley.com` (or whatever you own) and follow the DNS instructions
 it gives you.
 
+## Deploying to Netlify instead
+This repo also works on Netlify — it includes both function formats:
+- `netlify/functions/contact-handler.js` — Netlify's format (currently active;
+  the form's `action` in `index.html` points here)
+- `api/contact-handler.js` — Vercel's format (kept in case you switch back;
+  unused on Netlify)
+
+**Netlify's "Build settings" screen**, when connecting this repo:
+| Field | Value |
+|---|---|
+| Branch to deploy | `main` |
+| Base directory | *(leave empty)* |
+| Build command | *(leave empty — it's already static, no build step)* |
+| Publish directory | *(leave empty, or `.`)* |
+| Functions directory | *(leave empty — `netlify.toml` in this repo already sets it to `netlify/functions`)* |
+
+Then add the same two environment variables under **Site configuration →
+Environment variables**: `GMAIL_USER` and `GMAIL_APP_PASSWORD` (see the Gmail
+App Password steps above), and redeploy once so the function picks them up.
+
 ## A note on cost
 Everything above is free: Vercel's Hobby plan, GitHub, and Gmail SMTP all
 have no cost for a site at this scale. The only thing you'd ever pay for
