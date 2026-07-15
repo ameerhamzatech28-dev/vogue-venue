@@ -14,7 +14,7 @@
 
 const nodemailer = require("nodemailer");
 
-const TO_EMAIL = "ten11pizzavalley@gmail.com";
+const TO_EMAIL = "ameerhamzatech28@gmail.com";
 
 function validate({ name, phone, order }) {
   const errors = [];
