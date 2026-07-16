@@ -77,45 +77,8 @@
       <p class="eyebrow">The Menu</p>
       <h2>Baked boldly, Faisalabad style.</h2>
     </div>
-    <div class="menu-grid">
-      <div class="menu-card reveal"><div class="glare"></div>
-        <p class="tag">Classic</p>
-        <h3>Margherita</h3>
-        <p>San-marzano style tomato sauce, mozzarella, fresh basil, olive oil finish.</p>
-        <span class="price">Rs. 899</span>
-      </div>
-      <div class="menu-card reveal"><div class="glare"></div>
-        <p class="tag spicy">Signature</p>
-        <h3>Chicken Tikka Supreme</h3>
-        <p>Char-grilled tikka chicken, onions, green chilli, house tikka drizzle.</p>
-        <span class="price">Rs. 1,349</span>
-      </div>
-      <div class="menu-card reveal"><div class="glare"></div>
-        <p class="tag spicy">Best Seller</p>
-        <h3>Malai Boti Supreme</h3>
-        <p>Creamy malai boti, bell peppers, mozzarella, mild garlic cream base.</p>
-        <span class="price">Rs. 1,399</span>
-      </div>
-      <div class="menu-card reveal"><div class="glare"></div>
-        <p class="tag spicy">Loaded</p>
-        <h3>BBQ Chicken Overload</h3>
-        <p>Smoky BBQ base, double chicken, onions, jalapeños, extra cheese pull.</p>
-        <span class="price">Rs. 1,449</span>
-      </div>
-      <div class="menu-card reveal"><div class="glare"></div>
-        <p class="tag">Veg</p>
-        <h3>Achari Paneer</h3>
-        <p>Pickled-spice paneer, capsicum, onion, tangy achari tomato base.</p>
-        <span class="price">Rs. 1,099</span>
-      </div>
-      <div class="menu-card reveal"><div class="glare"></div>
-        <p class="tag">Fusion</p>
-        <h3>Fajita Delight</h3>
-        <p>Sizzling chicken fajita, tri-colour peppers, onion, smoked paprika.</p>
-        <span class="price">Rs. 1,299</span>
-      </div>
-</div>
-    <p class="menu-note reveal">Sample menu shown for layout — edit the <code>.menu-card</code> blocks in index.html with your real items &amp; prices.</p>
+    <div id="menuMount"><!-- populated by assets/js/main.js from MENU_DATA --></div>
+    <p class="menu-note reveal">Tap any item (or size) to add it to your order — your selection and total appear in the Order section below.</p>
   </div>
 </section>
 
@@ -170,6 +133,16 @@
     </div>
     <form id="orderForm" class="reveal" action="/.netlify/functions/contact-handler" method="POST">
       <input type="text" name="company" class="hp" tabindex="-1" autocomplete="off">
+
+      <div class="cart-summary">
+        <p class="cart-summary-title">Your Selection</p>
+        <div id="cartList" class="cart-list"></div>
+        <p id="cartEmpty" class="cart-empty">Nothing selected yet — tap items in the menu above.</p>
+        <div class="cart-total-row"><span>Total</span><b id="cartTotal">Rs. 0</b></div>
+      </div>
+      <input type="hidden" id="cartSummaryField" name="cart_summary">
+      <input type="hidden" id="cartTotalField" name="cart_total" value="0">
+
       <div class="form-row">
         <div class="field">
           <label for="name">Full Name</label>
@@ -188,8 +161,8 @@
       </div>
       <div class="form-row">
         <div class="field full">
-          <label for="order">Your Order</label>
-          <textarea id="order" name="order" placeholder="e.g. 1x Malai Boti Supreme (Large), 1x Coke" required></textarea>
+          <label for="order">Additional Notes (optional)</label>
+          <textarea id="order" name="order" placeholder="Anything not on the menu, or special instructions"></textarea>
         </div>
       </div>
       <button type="submit" class="btn btn-dark">Send Order</button>

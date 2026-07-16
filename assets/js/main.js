@@ -366,9 +366,8 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
-  /* ---------- 3D TILT MENU CARDS ---------- */
-  const cards = document.querySelectorAll(".menu-card");
-  cards.forEach((card) => {
+  /* ---------- 3D TILT (attached to each card as it's created) ---------- */
+  function attachCardTilt(card) {
     card.style.transform = "perspective(900px)";
     card.addEventListener("mousemove", (e) => {
       const r = card.getBoundingClientRect();
@@ -383,7 +382,225 @@
     card.addEventListener("mouseleave", () => {
       card.style.transform = "perspective(900px) rotateX(0) rotateY(0) translateZ(0)";
     });
-  });
+  }
+
+  /* =========================================================
+     REAL MENU DATA + CLICK-TO-SELECT ORDER BUILDER
+     -----------------------------------------------------------
+     Every item below is [label, price]. Single-price items use
+     one pair with an empty label. Sized items (pizzas, pasta)
+     list one pair per size — each size is selected independently.
+     Prices are transcribed directly from the restaurant's own
+     printed/photographed menu.
+  ========================================================= */
+  const MENU_DATA = [
+    { title: "Pizza Deals", items: [
+      { id: "d3", name: "Special Deal", desc: "1 Large Ten 11 Special Pizza, 1 Half Special Pasta, 1 Drink 1.5 Ltr", prices: [["", 1950]] },
+      { id: "d4", name: "Value Deal", desc: "2 Medium Pizzas (Ten 11 Special + Reg), 1 Drink 1.5 Ltr", prices: [["", 2050]] },
+      { id: "d5", name: "Super Deal", desc: "1 Large Ten 11 Special Pizza, 1 Medium Reg. Pizza, 1 Drink 1.5 Ltr", prices: [["", 2400]] },
+      { id: "d6", name: "Friends Deal", desc: "4 Burgers (Chicken, BBQ), 6 Pcs Wings Oven Baked, 1 Drink 1.5 Ltr", prices: [["", 1600]] },
+      { id: "d7", name: "Chaska Deal", desc: "1 Small Ten 11 Sp. Pizza, 1 Half Pasta, 6 Pcs Wings Oven Baked, 1 Drink 1 Ltr", prices: [["", 1200]] },
+      { id: "d8", name: "Royal Deal", desc: "1 Large Behari Kabab Pizza, 1 Half Pasta, 2 Patty Burger, 1 Drink 1.5 Ltr", prices: [["", 2400]] },
+      { id: "d9", name: "Mega Deal", desc: "3 Large Pizzas (2 Ten 11 Special + 1 Reg), 1 Full Pasta, 2 Drinks 1.5 Ltr", prices: [["", 4850]] },
+      { id: "d10", name: "Family Deal", desc: "2 XL Ten 11 Special Pizzas, 1 Full Pasta, 4 Pcs Spin Rolls, 10 Pcs Wings Oven Baked, 2 Drinks 1.5 Ltr", prices: [["", 5550]] },
+    ]},
+    { title: "Fried Deals", items: [
+      { id: "d11", name: "Deal 11", desc: "1 Zinger Burger, 1 Reg. Fries, 1 Reg. Drink", prices: [["", 620]] },
+      { id: "d12", name: "Deal 12", desc: "3 Chicken Pcs, 1 Reg. Fries, Half Ltr Drink", prices: [["", 950]] },
+      { id: "d13", name: "Deal 13", desc: "2 Zinger Burger, 10 Pcs Hot Wings, 1.5 Ltr Drink", prices: [["", 1430]] },
+      { id: "d14", name: "Deal 14", desc: "4 Zinger Burger, 1.5 Ltr Drink", prices: [["", 1500]] },
+      { id: "d15", name: "Deal 15", desc: "2 Chicken Pcs, 2 Zinger Burger, 1.5 Ltr Drink", prices: [["", 1260]] },
+      { id: "d16", name: "Deal 16", desc: "2 Zinger Burger, 2 Patty Burger, 1 Ltr Drink", prices: [["", 1280]] },
+      { id: "d17", name: "Deal 17", desc: "3 Chicken Shawarma, 3 Zinger Burger, 10 Hot Wings, 5 Nuggets, 2.25 Ltr Drink", prices: [["", 2700]] },
+      { id: "d18", name: "Deal 18", desc: "9 Chicken Pcs, 1 Reg. Fries, 1 Ltr Drink", prices: [["", 2200]] },
+    ]},
+    { title: "Ten 11 Special Flavours (Pizza)", items: [
+      { id: "sp1", name: "Ten 11 Special Pizza", prices: [["S", 510], ["M", 1050], ["L", 1350], ["XL", 1850]] },
+      { id: "sp2", name: "Bonfire Pizza", prices: [["S", 510], ["M", 1050], ["L", 1350], ["XL", 1850]] },
+      { id: "sp3", name: "Behari Kabab Pizza", prices: [["M", 1100], ["L", 1400], ["XL", 2050]] },
+      { id: "sp4", name: "Kabab Stuffed Pizza", prices: [["M", 1150], ["L", 1500], ["XL", 2100]] },
+      { id: "sp5", name: "Cheese Stuffed Pizza", prices: [["M", 1150], ["L", 1500], ["XL", 2100]] },
+      { id: "sp6", name: "Ch. Cheese Stuffed Pizza", prices: [["M", 1150], ["L", 1500], ["XL", 2100]] },
+      { id: "sp7", name: "Royal Crust Pizza", prices: [["M", 1150], ["L", 1500], ["XL", 2100]] },
+      { id: "sp8", name: "Malai Boti Pizza", prices: [["M", 1150], ["L", 1500], ["XL", 2100]] },
+    ]},
+    { title: "Regular Flavours (Pizza)", items: [
+      { id: "rg1", name: "Chicken Tikka", prices: [["S", 450], ["M", 950], ["L", 1250], ["XL", 1650]] },
+      { id: "rg2", name: "Chicken Fajita", prices: [["S", 450], ["M", 950], ["L", 1250], ["XL", 1650]] },
+      { id: "rg3", name: "Cheese Loaded", prices: [["S", 450], ["M", 950], ["L", 1250], ["XL", 1650]] },
+      { id: "rg4", name: "Chicken Supreme", prices: [["S", 470], ["M", 1000], ["L", 1300], ["XL", 1700]] },
+      { id: "rg5", name: "Super Supreme", prices: [["S", 490], ["M", 1050], ["L", 1350], ["XL", 1750]] },
+    ]},
+    { title: "Burgers", items: [
+      { id: "b1", name: "Zinger Burger", prices: [["", 350]] },
+      { id: "b2", name: "Mighty Burger", prices: [["", 550]] },
+      { id: "b3", name: "Chicken Burger", prices: [["", 300]] },
+      { id: "b4", name: "BBQ Burger", prices: [["", 300]] },
+      { id: "b5", name: "Jalapeno Burger", prices: [["", 300]] },
+      { id: "b6", name: "Patty Burger", prices: [["", 250]] },
+      { id: "b7", name: "Grill Burger", prices: [["", 350]] },
+    ]},
+    { title: "Appetizers", items: [
+      { id: "ap1", name: "Hot Wings (10 Pcs)", prices: [["", 600]] },
+      { id: "ap2", name: "Oven Baked Wings (10 Pcs)", prices: [["", 500]] },
+      { id: "ap3", name: "BBQ Wings (10 Pcs)", prices: [["", 550]] },
+      { id: "ap4", name: "Honey Wings (10 Pcs)", prices: [["", 550]] },
+      { id: "ap5", name: "Hot Shots (10 Pcs)", prices: [["", 400]] },
+      { id: "ap6", name: "Nuggets (10 Pcs)", prices: [["", 400]] },
+    ]},
+    { title: "Chicken Pieces", items: [
+      { id: "cp1", name: "3 Chicken Pcs", prices: [["", 650]] },
+      { id: "cp2", name: "5 Chicken Pcs", prices: [["", 1000]] },
+      { id: "cp3", name: "9 Chicken Pcs", prices: [["", 1900]] },
+    ]},
+    { title: "Fries", items: [
+      { id: "fr1", name: "Regular Fries", prices: [["", 250]] },
+      { id: "fr2", name: "Large Fries", prices: [["", 320]] },
+      { id: "fr3", name: "Mayo Fries", prices: [["", 450]] },
+      { id: "fr4", name: "Pizza Fries", prices: [["", 600]] },
+    ]},
+    { title: "Shawarma (Rolls)", items: [
+      { id: "sh1", name: "Chicken Shawarma", prices: [["", 250]] },
+      { id: "sh2", name: "Ch. Cheese Shawarma", prices: [["", 300]] },
+      { id: "sh3", name: "Ch. Pizza Shawarma", prices: [["", 350]] },
+      { id: "sh4", name: "Zinger Shawarma", prices: [["", 300]] },
+      { id: "sh5", name: "Tikka Shawarma", prices: [["", 300]] },
+      { id: "sh6", name: "Kabab Shawarma", prices: [["", 300]] },
+      { id: "sh7", name: "Malai Boti Shawarma", prices: [["", 300]] },
+    ]},
+    { title: "Paratha Rolls", items: [
+      { id: "pr1", name: "Chicken Paratha", prices: [["", 250]] },
+      { id: "pr2", name: "Ch. Cheese Paratha", prices: [["", 320]] },
+      { id: "pr3", name: "Zinger Paratha", prices: [["", 300]] },
+      { id: "pr4", name: "Malai Boti Paratha", prices: [["", 300]] },
+      { id: "pr5", name: "Kabab Paratha", prices: [["", 300]] },
+      { id: "pr6", name: "Special Paratha", prices: [["", 300]] },
+    ]},
+    { title: "Rolls", items: [
+      { id: "rl1", name: "Spin Roll", prices: [["", 500]] },
+      { id: "rl2", name: "Behari Roll", prices: [["", 500]] },
+      { id: "rl3", name: "Tampeli Roll", prices: [["", 550]] },
+      { id: "rl4", name: "Malai Boti Roll", prices: [["", 550]] },
+      { id: "rl5", name: "Ten 11 Special Roll", prices: [["", 550]] },
+    ]},
+    { title: "Pasta (Half / Full)", items: [
+      { id: "ps1", name: "Creamy Pasta", prices: [["Half", 380], ["Full", 700]] },
+      { id: "ps2", name: "Flaming Pasta", prices: [["Half", 380], ["Full", 700]] },
+      { id: "ps3", name: "Crunchy Pasta", prices: [["Half", 400], ["Full", 750]] },
+      { id: "ps4", name: "Ten 11 Special Pasta", prices: [["Half", 450], ["Full", 850]] },
+    ]},
+    { title: "Extra Toppings", items: [
+      { id: "et1", name: "Extra Topping — Chicken", prices: [["S", 100], ["M", 120], ["L", 140], ["XL", 170]] },
+      { id: "et2", name: "Extra Topping — Cheese", prices: [["S", 100], ["M", 120], ["L", 140], ["XL", 170]] },
+    ]},
+    { title: "Add-Ons", items: [
+      { id: "ad1", name: "Dip Sauce", prices: [["", 100]] },
+      { id: "ad2", name: "Special Sauce", prices: [["", 120]] },
+    ]},
+  ];
+
+  // cart key -> { name, label, price }
+  const cart = new Map();
+
+  function cartKey(itemId, label) { return itemId + "::" + label; }
+
+  function updateCartUI() {
+    const listEl = document.getElementById("cartList");
+    const totalEl = document.getElementById("cartTotal");
+    const emptyEl = document.getElementById("cartEmpty");
+    const summaryInput = document.getElementById("cartSummaryField");
+    const totalInput = document.getElementById("cartTotalField");
+    if (!listEl || !totalEl) return;
+
+    listEl.innerHTML = "";
+    let total = 0;
+    const lines = [];
+    cart.forEach((entry, key) => {
+      total += entry.price;
+      const label = entry.label ? ` (${entry.label})` : "";
+      lines.push(`${entry.name}${label} — Rs. ${entry.price.toLocaleString()}`);
+
+      const row = document.createElement("div");
+      row.className = "cart-row";
+      row.innerHTML = `<span>${entry.name}${label}</span><b>Rs. ${entry.price.toLocaleString()}</b>
+        <button type="button" class="cart-remove" aria-label="Remove">&times;</button>`;
+      row.querySelector(".cart-remove").addEventListener("click", () => {
+        cart.delete(key);
+        const btn = document.querySelector(`[data-cart-key="${CSS.escape(key)}"]`);
+        if (btn) btn.classList.remove("selected");
+        updateCartUI();
+      });
+      listEl.appendChild(row);
+    });
+
+    totalEl.textContent = "Rs. " + total.toLocaleString();
+    if (emptyEl) emptyEl.style.display = cart.size ? "none" : "block";
+    if (summaryInput) summaryInput.value = lines.join("\n");
+    if (totalInput) totalInput.value = String(total);
+  }
+
+  function toggleCartItem(item, label, price, btn) {
+    const key = cartKey(item.id, label);
+    if (cart.has(key)) {
+      cart.delete(key);
+      btn.classList.remove("selected");
+    } else {
+      cart.set(key, { name: item.name, label, price });
+      btn.classList.add("selected");
+    }
+    updateCartUI();
+  }
+
+  function renderMenu() {
+    const mount = document.getElementById("menuMount");
+    if (!mount) return;
+    mount.innerHTML = "";
+
+    MENU_DATA.forEach((category) => {
+      const section = document.createElement("div");
+      section.className = "menu-category reveal";
+
+      const heading = document.createElement("h3");
+      heading.className = "menu-category-title";
+      heading.textContent = category.title;
+      section.appendChild(heading);
+
+      const grid = document.createElement("div");
+      grid.className = "menu-grid";
+
+      category.items.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "menu-card";
+        card.innerHTML = `<div class="glare"></div><h3>${item.name}</h3>${item.desc ? `<p>${item.desc}</p>` : ""}`;
+
+        const priceRow = document.createElement("div");
+        priceRow.className = item.prices.length > 1 ? "price-pills" : "price-single";
+
+        item.prices.forEach(([label, price]) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = item.prices.length > 1 ? "price-pill" : "price-btn";
+          btn.dataset.cartKey = cartKey(item.id, label);
+          btn.innerHTML = label
+            ? `<span class="pill-label">${label}</span><span class="pill-price">Rs. ${price.toLocaleString()}</span>`
+            : `Add — Rs. ${price.toLocaleString()}`;
+          btn.addEventListener("click", () => toggleCartItem(item, label, price, btn));
+          priceRow.appendChild(btn);
+        });
+
+        card.appendChild(priceRow);
+        attachCardTilt(card);
+        grid.appendChild(card);
+      });
+
+      section.appendChild(grid);
+      mount.appendChild(section);
+    });
+
+    // newly created .reveal elements need the same scroll-in observer as the rest of the page
+    document.querySelectorAll(".menu-category.reveal").forEach((el) => io.observe(el));
+  }
+  renderMenu();
 
   /* ---------- CONTACT / ORDER FORM ---------- */
   const form = document.getElementById("orderForm");
@@ -391,9 +608,16 @@
   if (form) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      if (!cart.size && !form.querySelector("#order").value.trim()) {
+        formMsg.className = "form-msg show err";
+        formMsg.textContent = "Please select at least one item from the menu, or add a note below.";
+        return;
+      }
+
       formMsg.className = "form-msg show";
       formMsg.textContent = "Sending your order details…";
-      const endpoint = form.getAttribute("action"); // /api/contact-handler
+      const endpoint = form.getAttribute("action");
       try {
         const payload = Object.fromEntries(new FormData(form));
         const res = await fetch(endpoint, {
@@ -406,7 +630,12 @@
         formMsg.textContent = data.ok === false
           ? (data.message || "Something went wrong — please call us instead.")
           : (data.message || "Thanks! We've got your order and will call to confirm shortly.");
-        if (data.ok !== false) form.reset();
+        if (data.ok !== false) {
+          form.reset();
+          cart.clear();
+          document.querySelectorAll(".price-pill.selected, .price-btn.selected").forEach((b) => b.classList.remove("selected"));
+          updateCartUI();
+        }
       } catch (err) {
         formMsg.classList.add("err");
         formMsg.textContent = "Could not reach the server — please call us at +92 300 1691011 to place your order.";

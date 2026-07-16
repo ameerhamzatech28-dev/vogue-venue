@@ -16,11 +16,11 @@ const nodemailer = require("nodemailer");
 
 const TO_EMAIL = "ameerhamzatech28@gmail.com";
 
-function validate({ name, phone, order }) {
+function validate({ name, phone, order, cart_summary }) {
   const errors = [];
   if (!name || !name.trim()) errors.push("Name is required.");
   if (!phone || !/^[0-9+\-\s()]{7,20}$/.test(phone.trim())) errors.push("A valid phone number is required.");
-  if (!order || !order.trim()) errors.push("Please tell us what you would like to order.");
+  if ((!order || !order.trim()) && (!cart_summary || !cart_summary.trim())) errors.push("Please select at least one menu item, or add a note.");
   return errors;
 }
 
@@ -35,6 +35,8 @@ module.exports = async (req, res) => {
   const phone = (body.phone || "").toString().trim();
   const address = (body.address || "").toString().trim();
   const order = (body.order || "").toString().trim();
+  const cart_summary = (body.cart_summary || "").toString().trim();
+  const cart_total = (body.cart_total || "0").toString().trim();
   const company = (body.company || "").toString().trim(); // honeypot
 
   // Bots fill hidden fields — silently accept so they don't learn it failed.
@@ -43,7 +45,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const errors = validate({ name, phone, order });
+  const errors = validate({ name, phone, order, cart_summary });
   if (errors.length) {
     res.status(400).json({ ok: false, message: errors.join(" ") });
     return;
@@ -77,7 +79,8 @@ module.exports = async (req, res) => {
         `Name:    ${name}\n` +
         `Phone:   ${phone}\n` +
         `Address: ${address}\n\n` +
-        `Order:\n${order}\n`,
+        (cart_summary ? `Selected items:\n${cart_summary}\n\nTotal: Rs. ${Number(cart_total).toLocaleString()}\n\n` : "") +
+        (order ? `Additional notes:\n${order}\n` : ""),
     });
 
     res.status(200).json({

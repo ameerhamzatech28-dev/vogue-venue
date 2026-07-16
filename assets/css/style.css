@@ -175,6 +175,62 @@ section{ position:relative; }
 .menu-card .price{ font-family:var(--mono); color:var(--gold); font-weight:700; margin-top:1em; display:block; font-size:1.05rem; }
 .menu-note{ text-align:center; margin-top:2.4em; color:#9c9182; font-family:var(--mono); font-size:.8rem; }
 
+/* Category subheadings for the full real menu */
+.menu-category{ margin-bottom:3.2em; }
+.menu-category:last-child{ margin-bottom:0; }
+.menu-category-title{
+  font-family:var(--mono); font-size:.78rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--gold); text-align:center; margin:0 0 1.4em; padding-bottom:.7em; border-bottom:1px solid var(--line);
+}
+
+/* Single-price items: one full-width button that also IS the price */
+.price-single{ margin-top:1em; }
+.price-btn{
+  width:100%; font-family:var(--mono); font-weight:700; font-size:.95rem; letter-spacing:.02em;
+  padding:.75em 1em; border-radius:4px; border:1.5px solid var(--gold); background:transparent; color:var(--gold);
+  cursor:pointer; transition:background .2s, color .2s, transform .15s;
+}
+.price-btn:hover{ transform:translateY(-1px); }
+.price-btn.selected{ background:var(--tomato); border-color:var(--tomato); color:var(--flour); }
+
+/* Sized items (pizzas, pasta): a row of small size pills, each its own price */
+.price-pills{ display:flex; flex-wrap:wrap; gap:.5em; margin-top:1em; }
+.price-pill{
+  flex:1 1 auto; min-width:64px; font-family:var(--mono); font-size:.78rem; text-align:center;
+  padding:.55em .5em; border-radius:4px; border:1.5px solid var(--line); background:transparent; color:#c9bfae;
+  cursor:pointer; transition:background .2s, color .2s, border-color .2s, transform .15s; line-height:1.3;
+}
+.price-pill:hover{ border-color:var(--gold); transform:translateY(-1px); }
+.price-pill .pill-label{ display:block; text-transform:uppercase; letter-spacing:.08em; font-size:.68rem; opacity:.8; }
+.price-pill .pill-price{ display:block; font-weight:700; color:var(--gold); }
+.price-pill.selected{ background:var(--tomato); border-color:var(--tomato); }
+.price-pill.selected .pill-price, .price-pill.selected .pill-label{ color:var(--flour); }
+
+/* Cart summary panel inside the Order form */
+.cart-summary{
+  background:#fffaf1; border:1.5px solid #d8cbb2; border-radius:6px; padding:1.3em 1.4em; margin-bottom:1.6em;
+}
+.cart-summary-title{
+  font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--crust); margin-bottom:.8em;
+}
+.cart-list{ display:flex; flex-direction:column; gap:.5em; }
+.cart-row{
+  display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:.8em;
+  font-size:.9rem; color:var(--ink); padding-bottom:.5em; border-bottom:1px dashed #e3d6ba;
+}
+.cart-row b{ font-family:var(--mono); color:var(--tomato-dark); white-space:nowrap; }
+.cart-remove{
+  background:none; border:none; color:#a99a80; font-size:1.1rem; line-height:1; cursor:pointer; padding:0 .2em;
+}
+.cart-remove:hover{ color:var(--tomato); }
+.cart-empty{ color:#a99a80; font-family:var(--mono); font-size:.82rem; }
+.cart-total-row{
+  display:flex; justify-content:space-between; align-items:baseline; margin-top:.9em; padding-top:.8em;
+  border-top:1.5px solid #d8cbb2; font-family:var(--mono);
+}
+.cart-total-row span{ text-transform:uppercase; font-size:.75rem; letter-spacing:.08em; color:var(--crust); }
+.cart-total-row b{ font-size:1.3rem; color:var(--tomato); }
+
 /* ---------- GALLERY ---------- */
 .gallery{ background:var(--flour); padding:7.5em 0; }
 .gallery-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1em; }
