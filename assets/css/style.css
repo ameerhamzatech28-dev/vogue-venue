@@ -161,17 +161,21 @@ section{ position:relative; }
 .menu-card{
   position:relative; background:var(--charcoal-2); border:1px solid var(--line); border-radius:6px;
   padding:1.8em 1.6em 1.6em; transform-style:preserve-3d; transition:transform .12s linear, border-color .3s;
-  will-change:transform;
+  will-change:transform; overflow:hidden;
 }
 .menu-card:hover{ border-color:var(--gold); }
 .menu-card .glare{
-  position:absolute; inset:0; border-radius:6px; pointer-events:none;
+  position:absolute; inset:0; border-radius:6px; pointer-events:none; z-index:2;
   background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%), rgba(217,164,65,.16), transparent 60%);
 }
+.card-photo{
+  margin:-1.8em -1.6em 1em; aspect-ratio:600/400; overflow:hidden; background:var(--charcoal);
+}
+.card-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
 .menu-card .tag{ font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--basil); }
 .menu-card .tag.spicy{ color:var(--tomato); }
 .menu-card h3{ font-family:var(--body); font-weight:700; font-size:1.22rem; margin:.5em 0 .4em; }
-.menu-card p{ color:#c9bfae; font-size:.9rem; line-height:1.6; min-height:3.2em; }
+.menu-card p{ color:#c9bfae; font-size:.9rem; line-height:1.6; }
 .menu-card .price{ font-family:var(--mono); color:var(--gold); font-weight:700; margin-top:1em; display:block; font-size:1.05rem; }
 .menu-note{ text-align:center; margin-top:2.4em; color:#9c9182; font-family:var(--mono); font-size:.8rem; }
 
