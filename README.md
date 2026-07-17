@@ -58,6 +58,33 @@ Vercel's free tier includes custom domains: **Settings → Domains** → add
 `ten11pizzavalley.com` (or whatever you own) and follow the DNS instructions
 it gives you.
 
+## Clients Orders (live orders table)
+At the bottom of the site there's a "Clients Orders" section, hidden behind
+a staff passcode, showing every order ever submitted in a live-updating
+table (Date, Name, Phone, Address, Items with sizes, Total, Notes).
+
+**How it works:** every order is saved to **Netlify Blobs** (a storage
+feature built into every Netlify site — no signup, no extra service) at
+the same moment it's emailed, so the table stays accurate even if an
+email ever fails to send.
+
+**Setup — one more environment variable**, alongside `GMAIL_USER` and
+`GMAIL_APP_PASSWORD`:
+
+| Name | Value |
+|---|---|
+| `ADMIN_PASSCODE` | any word or PIN you'll remember, e.g. `ten11staff2026` |
+
+Add it the same way (Site configuration → Environment variables), then
+redeploy once. Share this passcode only with staff — anyone who has it
+can see every customer's name, phone number, and address, so treat it
+like a password, not a public detail.
+
+**Important:** this feature only works on the Netlify deployment (it
+uses Netlify Blobs + Netlify Functions). If you ever move to Vercel or
+plain PHP hosting instead, this section would need a different storage
+backend (e.g. Vercel KV, or a real database) to keep working.
+
 ## Deploying to Netlify instead
 This repo also works on Netlify — it includes both function formats:
 - `netlify/functions/contact-handler.js` — Netlify's format (currently active;

@@ -643,6 +643,93 @@
     });
   }
 
+  /* ---------- CLIENTS ORDERS (staff-only live view) ---------- */
+  (function initClientsOrders() {
+    const toggle = document.getElementById("ordersToggle");
+    const panel = document.getElementById("ordersPanel");
+    const gate = document.getElementById("ordersGate");
+    const gateMsg = document.getElementById("ordersGateMsg");
+    const passInput = document.getElementById("ordersPasscode");
+    const unlockBtn = document.getElementById("ordersUnlock");
+    const view = document.getElementById("ordersView");
+    const tbody = document.getElementById("ordersTableBody");
+    const emptyMsg = document.getElementById("ordersEmptyMsg");
+    const refreshBtn = document.getElementById("ordersRefresh");
+    if (!toggle || !panel) return;
+
+    let passcode = "";
+    let pollTimer = null;
+
+    toggle.addEventListener("click", () => {
+      const opening = panel.hasAttribute("hidden");
+      panel.toggleAttribute("hidden");
+      if (opening && passcode) loadOrders();
+      if (!opening && pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    });
+
+    unlockBtn.addEventListener("click", async () => {
+      const val = passInput.value.trim();
+      if (!val) return;
+      gateMsg.textContent = "Checking…";
+      const res = await fetchOrders(val);
+      if (res.ok) {
+        passcode = val;
+        gate.hidden = true;
+        view.hidden = false;
+        renderOrders(res.orders);
+        pollTimer = setInterval(() => loadOrders(), 15000);
+      } else {
+        gateMsg.textContent = res.message || "Wrong passcode.";
+      }
+    });
+    passInput.addEventListener("keydown", (e) => { if (e.key === "Enter") unlockBtn.click(); });
+
+    refreshBtn.addEventListener("click", () => loadOrders());
+
+    async function loadOrders() {
+      const res = await fetchOrders(passcode);
+      if (res.ok) renderOrders(res.orders);
+    }
+
+    async function fetchOrders(pass) {
+      try {
+        const r = await fetch(`/.netlify/functions/get-orders?passcode=${encodeURIComponent(pass)}`);
+        const data = await r.json().catch(() => ({ ok: false, message: "Bad response." }));
+        return data;
+      } catch (e) {
+        return { ok: false, message: "Could not reach the server." };
+      }
+    }
+
+    function renderOrders(orders) {
+      tbody.innerHTML = "";
+      if (!orders || !orders.length) {
+        emptyMsg.hidden = false;
+        return;
+      }
+      emptyMsg.hidden = true;
+      orders.forEach((o) => {
+        const tr = document.createElement("tr");
+        const when = o.receivedAt ? new Date(o.receivedAt).toLocaleString() : "";
+        const items = (o.cart_summary || "").split("\n").filter(Boolean).join("; ") || "—";
+        const total = o.cart_total ? "Rs. " + Number(o.cart_total).toLocaleString() : "—";
+        tr.innerHTML = `
+          <td>${when}</td>
+          <td>${escapeHtml(o.name || "")}</td>
+          <td>${escapeHtml(o.phone || "")}</td>
+          <td>${escapeHtml(o.address || "")}</td>
+          <td>${escapeHtml(items)}</td>
+          <td>${total}</td>
+          <td>${escapeHtml(o.order || "—")}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+  })();
+
   /* footer year */
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();

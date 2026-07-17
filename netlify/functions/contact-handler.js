@@ -13,9 +13,14 @@
  *
  *   GMAIL_USER          e.g. ten11pizzavalley@gmail.com
  *   GMAIL_APP_PASSWORD  a 16-character Gmail "App Password"
+ *
+ * Every order is also saved to Netlify Blobs (a storage feature built into
+ * every Netlify site, no extra signup needed) so the "Clients Orders"
+ * section on the site can list them — see get-orders.js.
  */
 
 const nodemailer = require("nodemailer");
+const { getStore } = require("@netlify/blobs");
 
 const TO_EMAIL = "ameerhamzatech28@gmail.com";
 
@@ -25,6 +30,17 @@ function validate({ name, phone, order, cart_summary }) {
   if (!phone || !/^[0-9+\-\s()]{7,20}$/.test(phone.trim())) errors.push("A valid phone number is required.");
   if ((!order || !order.trim()) && (!cart_summary || !cart_summary.trim())) errors.push("Please select at least one menu item, or add a note.");
   return errors;
+}
+
+async function saveOrderRecord(record) {
+  try {
+    const store = getStore("orders");
+    const key = `order-${record.receivedAt}-${Math.random().toString(36).slice(2, 7)}`;
+    await store.setJSON(key, record);
+  } catch (e) {
+    // Never let a storage hiccup block the actual order email from going out.
+    console.error("Failed to save order to Netlify Blobs:", e);
+  }
 }
 
 exports.handler = async (event) => {
@@ -58,6 +74,9 @@ exports.handler = async (event) => {
   if (errors.length) {
     return { statusCode: 400, body: JSON.stringify({ ok: false, message: errors.join(" ") }) };
   }
+
+  const receivedAt = new Date().toISOString();
+  await saveOrderRecord({ receivedAt, name, phone, address, order, cart_summary, cart_total });
 
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
     console.error("Missing GMAIL_USER / GMAIL_APP_PASSWORD environment variables.");

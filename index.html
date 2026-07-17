@@ -171,6 +171,48 @@
   </div>
 </section>
 
+<section class="orders-admin" id="clients-orders">
+  <div class="container">
+    <button type="button" id="ordersToggle" class="orders-toggle">
+      <span class="eyebrow" style="margin:0">Clients Orders</span>
+      <span class="orders-toggle-hint">Staff only — click to view live orders</span>
+    </button>
+
+    <div id="ordersPanel" class="orders-panel" hidden>
+      <div id="ordersGate" class="orders-gate">
+        <label for="ordersPasscode">Passcode</label>
+        <input type="password" id="ordersPasscode" placeholder="Enter staff passcode" autocomplete="off">
+        <button type="button" id="ordersUnlock" class="btn btn-dark">Unlock</button>
+        <p id="ordersGateMsg" class="orders-gate-msg"></p>
+      </div>
+
+      <div id="ordersView" class="orders-view" hidden>
+        <div class="orders-view-head">
+          <p class="orders-live-dot"><span></span> Live</p>
+          <button type="button" id="ordersRefresh" class="btn btn-ghost" style="color:var(--crust);border-color:var(--crust);">Refresh now</button>
+        </div>
+        <div class="orders-table-wrap">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Received</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+          <p id="ordersEmptyMsg" class="orders-empty-msg" hidden>No orders yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer class="site-footer">
   <div class="container">
     <div class="footer-top">

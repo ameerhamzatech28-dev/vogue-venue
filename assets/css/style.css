@@ -294,6 +294,37 @@ section{ position:relative; }
 .form-msg.err{ color:var(--tomato); }
 
 /* ---------- FOOTER ---------- */
+/* ---------- CLIENTS ORDERS (staff-only) ---------- */
+.orders-admin{ background:var(--charcoal); padding:3em 0; border-top:1px solid var(--line); }
+.orders-toggle{
+  width:100%; display:flex; align-items:center; justify-content:space-between; gap:1em; flex-wrap:wrap;
+  background:var(--charcoal-2); border:1px solid var(--line); border-radius:6px; padding:1.1em 1.4em;
+  cursor:pointer; transition:border-color .2s;
+}
+.orders-toggle:hover{ border-color:var(--gold); }
+.orders-toggle-hint{ font-family:var(--mono); font-size:.72rem; color:#8a8072; }
+.orders-panel{ margin-top:1.4em; background:var(--charcoal-2); border:1px solid var(--line); border-radius:6px; padding:1.6em; }
+.orders-gate{ display:flex; flex-wrap:wrap; align-items:center; gap:.8em; }
+.orders-gate label{ font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); }
+.orders-gate input{
+  flex:1 1 220px; font-family:var(--body); font-size:.95rem; padding:.7em 1em; border-radius:4px;
+  border:1.5px solid var(--line); background:var(--charcoal); color:var(--flour);
+}
+.orders-gate-msg{ width:100%; font-family:var(--mono); font-size:.8rem; color:var(--tomato); margin:0; }
+.orders-view-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2em; }
+.orders-live-dot{ display:flex; align-items:center; gap:.5em; font-family:var(--mono); font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; color:var(--basil); margin:0; }
+.orders-live-dot span{ width:8px; height:8px; border-radius:50%; background:var(--basil); display:inline-block; animation:live-pulse 1.6s infinite; }
+@keyframes live-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.3; } }
+.orders-table-wrap{ overflow-x:auto; }
+.orders-table{ width:100%; border-collapse:collapse; font-size:.85rem; color:#d9cfbe; }
+.orders-table th{
+  text-align:left; font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--gold); padding:.6em .8em; border-bottom:1.5px solid var(--line); white-space:nowrap;
+}
+.orders-table td{ padding:.7em .8em; border-bottom:1px solid var(--line); vertical-align:top; }
+.orders-table tr:last-child td{ border-bottom:none; }
+.orders-empty-msg{ font-family:var(--mono); font-size:.85rem; color:#8a8072; text-align:center; padding:1.4em 0; }
+
 .site-footer{ background:var(--charcoal); color:#9c9182; padding:3.2em 0 2em; }
 .footer-top{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:2em; padding-bottom:2.4em; border-bottom:1px solid var(--line); }
 .footer-brand{ font-family:var(--display); color:var(--flour); font-size:1.6rem; }
