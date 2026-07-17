@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clients Orders — Ten11 Pizza Valley</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  body{ background:var(--charcoal); }
+  .orders-page{ max-width:1100px; margin:0 auto; padding:3em 5%; color:var(--flour); }
+  .orders-page h1{ font-family:var(--display); font-size:2rem; margin-bottom:.2em; }
+  .orders-page .sub{ font-family:var(--mono); font-size:.8rem; color:#9c9182; margin-bottom:1.8em; }
+  .orders-state{ font-family:var(--mono); font-size:.9rem; color:var(--tomato); padding:2em 0; text-align:center; }
+</style>
+</head>
+<body>
+<div class="orders-page">
+  <h1>Clients Orders</h1>
+  <p class="sub">Ten11 Pizza Valley — staff view</p>
+
+  <div class="orders-panel" style="margin-top:0;">
+    <div class="orders-view-head">
+      <p class="orders-live-dot"><span></span> Live</p>
+      <button type="button" id="ordersRefresh" class="btn btn-ghost" style="color:var(--crust);border-color:var(--crust);">Refresh now</button>
+    </div>
+    <div class="orders-table-wrap">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Received</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody"></tbody>
+      </table>
+      <p id="ordersEmptyMsg" class="orders-empty-msg" hidden>No orders yet.</p>
+      <p id="ordersErrorMsg" class="orders-state" hidden></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const params = new URLSearchParams(location.search);
+    const passcode = params.get("passcode") || "";
+    const tbody = document.getElementById("ordersTableBody");
+    const emptyMsg = document.getElementById("ordersEmptyMsg");
+    const errorMsg = document.getElementById("ordersErrorMsg");
+    const refreshBtn = document.getElementById("ordersRefresh");
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function renderOrders(orders) {
+      tbody.innerHTML = "";
+      errorMsg.hidden = true;
+      if (!orders || !orders.length) {
+        emptyMsg.hidden = false;
+        return;
+      }
+      emptyMsg.hidden = true;
+      orders.forEach((o) => {
+        const tr = document.createElement("tr");
+        const when = o.receivedAt ? new Date(o.receivedAt).toLocaleString() : "";
+        const items = (o.cart_summary || "").split("\n").filter(Boolean).join("; ") || "—";
+        const total = o.cart_total ? "Rs. " + Number(o.cart_total).toLocaleString() : "—";
+        tr.innerHTML = `
+          <td>${when}</td>
+          <td>${escapeHtml(o.name || "")}</td>
+          <td>${escapeHtml(o.phone || "")}</td>
+          <td>${escapeHtml(o.address || "")}</td>
+          <td>${escapeHtml(items)}</td>
+          <td>${total}</td>
+          <td>${escapeHtml(o.order || "—")}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function loadOrders() {
+      if (!passcode) {
+        errorMsg.textContent = "No passcode provided.";
+        errorMsg.hidden = false;
+        return;
+      }
+      try {
+        const r = await fetch(`/.netlify/functions/get-orders?passcode=${encodeURIComponent(passcode)}`);
+        const data = await r.json().catch(() => ({ ok: false, message: "Bad response." }));
+        if (data.ok) {
+          renderOrders(data.orders);
+        } else {
+          tbody.innerHTML = "";
+          emptyMsg.hidden = true;
+          errorMsg.textContent = data.message || "Could not load orders.";
+          errorMsg.hidden = false;
+        }
+      } catch (e) {
+        errorMsg.textContent = "Could not reach the server.";
+        errorMsg.hidden = false;
+      }
+    }
+
+    refreshBtn.addEventListener("click", loadOrders);
+    loadOrders();
+    setInterval(loadOrders, 15000);
+  })();
+</script>
+</body>
+</html>
