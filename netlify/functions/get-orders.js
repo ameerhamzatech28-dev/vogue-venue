@@ -47,6 +47,9 @@ exports.handler = async (event) => {
     };
   } catch (err) {
     console.error("Failed to list orders:", err);
-    return { statusCode: 500, body: JSON.stringify({ ok: false, message: "Could not load orders." }) };
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ ok: false, message: "Could not load orders — " + (err && err.message ? err.message : String(err)) }),
+    };
   }
 };
